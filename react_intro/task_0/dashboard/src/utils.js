@@ -1,11 +1,16 @@
-const myDate = {
-  getCurrentYear() {
-    return new Date().getFullYear();
-  },
+function getCurrentYear() {
+    const dateTime = new Date();
+    return dateTime.getFullYear();
+}
 
-  getFooterCopy(isIndex) {
-    return isIndex ? 'Holberton School' : 'Holberton School main dashboard';
-  },
-};
+const getFooterCopy = (isIndex) => {
+    if (isIndex) {
+        const str = "<strong>Holberton School</strong>";
+        return <span dangerouslySetInnerHTML={{__html:str}} />;
+    } else {
+        const str = "<strong>Holberton School main dashboard</strong>";
+        return <span dangerouslySetInnerHTML={{ __html: str }} />;
+    }
+}
 
-export default myDate;
+export default { getCurrentYear, getFooterCopy }
