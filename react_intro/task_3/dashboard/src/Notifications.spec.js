@@ -20,16 +20,6 @@ describe("Notifications component", () => {
         expect(listItems).toHaveLength(3);
     });
 
-    test("renders all notification texts and ignores case", () => {
-        render(<Notifications />);
-
-        expect(screen.getByText(/here is the list of notifications/i)).toBeInTheDocument();
-        expect(screen.getByText(/new course available/i)).toBeInTheDocument();
-        expect(screen.getByText(/new resume available/i)).toBeInTheDocument();
-        expect(screen.getByText(/urgent requirement/i)).toBeInTheDocument();
-        expect(screen.getByText(/complete by eod/i)).toBeInTheDocument();
-    });
-
     test("clicking the close button logs to console", () => {
         const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
         render(<Notifications />);

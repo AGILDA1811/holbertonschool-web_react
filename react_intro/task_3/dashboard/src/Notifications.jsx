@@ -1,34 +1,27 @@
-import './Notifications.css';
-import closeIcon from './assets/close-icon.png';
-import { getLatestNotification } from './utils';
+import "./Notifications.css";
+import closeIcon from "./assets/close-button.png";
+import { getLatestNotification } from "./utils";
 
-export default function Notifications() {
+function Notifications() {
+
+    const handleClick = () => {
+        console.log("Close button has been clicked");
+    }
+
     return (
         <div className="notification-items">
-            <button
-                type="button"
-                aria-label="Close"
-                style={{
-                    background: 'transparent',
-                    border: 'none',
-                    position: 'absolute',
-                    right: '10px',
-                    top: '10px',
-                    cursor: 'pointer',
-                }}
-                onClick={() => console.log('Close button has been clicked')}
-            >
-                <img src={closeIcon} alt="Close icon" width="10" />
-            </button>
             <p>Here is the list of notifications</p>
             <ul>
                 <li data-priority="default">New course available</li>
                 <li data-priority="urgent">New resume available</li>
-                <li
-                    data-priority="urgent"
-                    dangerouslySetInnerHTML={{ __html: getLatestNotification() }}
-                />
+                <li dangerouslySetInnerHTML={{ __html: getLatestNotification() }}>
+                </li>
             </ul>
-        </div>
-    );
+            <button style={{ position: "absolute", top: "15px", right: "20px" }} aria-label="Close" onClick={handleClick}>
+                <img style={{ width: "10px", height: "10px" }} src={closeIcon} />
+            </button>
+        </div >
+    )
 }
+
+export default Notifications;
