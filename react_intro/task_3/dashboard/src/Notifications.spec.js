@@ -1,31 +1,38 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications";
+import { fireEvent, render, screen } from '@testing-library/react';
+import Notifications from './Notifications';
 
-describe("Notifications component", () => {
-    test("renders the notifications title", () => {
-        render(<Notifications />);
-        const title = screen.getByText(/here is the list of notifications/i)
-        expect(title).toBeInTheDocument();
-    });
+describe('Notifications component', () => {
+  test('renders all required elements and ignores case', () => {
+    render(<Notifications />);
 
-    test("renders a close button", () => {
-        render(<Notifications />);
-        const button = screen.getByRole("button", { name: /close/i });
-        expect(button).toBeInTheDocument();
-    });
+    const title = screen.getByText(/here is the list of notifications/i);
+    const button = screen.getByRole('button', { name: /close/i });
+    const list = screen.getByRole('list');
+    const closeIcon = screen.getByAltText(/close icon/i);
+    const firstNotification = screen.getByText(/new course available/i).closest('li');
+    const secondNotification = screen.getByText(/new resume available/i).closest('li');
+    const latestNotification = screen.getByText(/urgent requirement/i).closest('li');
 
-    test("renders 3 list items", () => {
-        render(<Notifications />);
-        const listItems = screen.getAllByRole("listitem");
-        expect(listItems).toHaveLength(3);
-    });
+    expect(title).toBeInTheDocument();
+    expect(button).toBeInTheDocument();
+    expect(list).toBeInTheDocument();
+    expect(closeIcon).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
 
-    test("clicking the close button logs to console", () => {
-        const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
-        render(<Notifications />);
-        const button = screen.getByRole("button", { name: /close/i });
-        fireEvent.click(button);
-        expect(logSpy).toHaveBeenCalledWith("Close button has been clicked");
-        logSpy.mockRestore();
-    });
+    expect(firstNotification).toHaveAttribute('data-priority', 'default');
+    expect(secondNotification).toHaveAttribute('data-priority', 'urgent');
+    expect(latestNotification).toHaveAttribute('data-priority', 'urgent');
+    expect(latestNotification).toHaveTextContent(/urgent requirement - complete by eod/i);
+  });
+
+  test('clicking the close button logs to console', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    render(<Notifications />);
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+
+    expect(logSpy).toHaveBeenCalledWith('Close button has been clicked');
+
+    logSpy.mockRestore();
+  });
 });
