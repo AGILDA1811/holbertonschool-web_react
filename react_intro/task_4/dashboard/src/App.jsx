@@ -1,35 +1,30 @@
 import './App.css'
-import holbertLogo from "./assets/holberton-logo.jpg";
-import Notifications from './Notifications.jsx';
-import { getCurrentYear, getFooterCopy } from './utils.jsx';
+import Notifications from './Notifications';
+import { getCurrentYear, getFooterCopy } from './utils';
 
 function App() {
+  const logoPath = `${import.meta.env.BASE_URL}holberton-logo.jpg`;
 
   return (
     <>
-      <div>
-        <Notifications />
+      <Notifications />
+      <div className="App-header">
+        <img src={logoPath} alt="Holberton logo" />
+        <h1>School Dashboard</h1>
       </div>
-      <div className='App-header'>
-        <img src={holbertLogo} alt='holberton logo' />
-        <h1 style={{ color: "#e1003c" }}>School dashboard</h1>
+      <div className="App-body">
+        <p>Login to access the full dashboard</p>
+        <label htmlFor="email">Email:</label>
+        <input type="email" id="email" />
+        <label htmlFor="password">Password:</label>
+        <input type="password" id="password" />
+        <button type="button">OK</button>
       </div>
-
-      <div className='App-body'>
-        <p> Login to access the full dashboard</p>
-        <label htmlFor="email">email</label>
-        <input type="email" id="email"></input>
-
-        <label htmlFor="password">password</label>
-        <input type="password" id="password"></input>
-
-        <button type="submit">Ok</button>
-      </div>
-      <div className='App-footer'>
-        <p>Copyright {getCurrentYear()} -  {getFooterCopy(true)}</p>
+      <div className="App-footer">
+        <p>Copyright {getCurrentYear()} - {getFooterCopy(true)}</p>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

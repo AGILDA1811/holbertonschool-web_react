@@ -2,7 +2,7 @@ import path from 'path';
 
 
 export default {
-    process(sourceText, sourcePath, options) {
+    process(_sourceText, sourcePath) {
         return {
             code: `module.exports = ${JSON.stringify(path.basename(sourcePath))};`,
         };

@@ -1,31 +1,24 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications.jsx";
+import { fireEvent, render, screen } from '@testing-library/react';
+import Notifications from './Notifications';
 
-test("Notifications.jsx test", () => {
+describe('Notifications', () => {
+  test('renders the notifications content', () => {
     render(<Notifications />);
 
-    // 1. Titulli
-    const notificationTitle = screen.getByText("Here is the list of notifications");
-    expect(notificationTitle).toBeInTheDocument();
+    expect(screen.getByText(/here is the list of notifications/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
+    expect(screen.getByRole('list')).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+  });
 
-    // 2. Butoni Close
-    const closeButton = screen.getByRole("button", { name: "Close" });
-    expect(closeButton).toBeInTheDocument();
+  test('logs when the close button is clicked', () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-    // 3. 3 li elements
-    const listItems = screen.getAllByRole("listitem");
-    expect(listItems).toHaveLength(3);
+    render(<Notifications />);
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
 
-    // 4. Spy për console.log
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+    expect(consoleSpy).toHaveBeenCalledWith('Close button has been clicked');
 
-    // 5. Klikimi i butonit Close
-    fireEvent.click(closeButton);
-    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
-
-    // 6. Pastrimi i spy
     consoleSpy.mockRestore();
-
-    console.log("OK");
+  });
 });
-console.log("OK");

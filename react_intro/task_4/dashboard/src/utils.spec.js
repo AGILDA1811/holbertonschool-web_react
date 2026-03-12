@@ -1,4 +1,8 @@
-import { getCurrentYear, getFooterCopy, getLatestNotification } from "../../../task_2/dashboard/src/utils.jsx";
+import {
+    getCurrentYear,
+    getFooterCopy,
+    getLatestNotification,
+} from "./utils";
 
 describe("Utils function", () => {
     test("getCurrentYear return the current year", () => {
