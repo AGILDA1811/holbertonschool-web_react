@@ -1,29 +1,29 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import Notifications from './Notifications';
+import { fireEvent, render, screen } from "@testing-library/react";
+import Notifications from "./Notifications.jsx";
 
-describe('Notifications component', () => {
-  test('renders all required elements and ignores case', () => {
+describe("Notifications component", () => {
+  test("renders the notifications list and handles the close button", () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
     render(<Notifications />);
 
     expect(
       screen.getByText(/here is the list of notifications/i)
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
-    expect(screen.getByText(/new course available/i)).toBeInTheDocument();
-    expect(screen.getByText(/new resume available/i)).toBeInTheDocument();
-    expect(screen.getByText(/urgent requirement/i)).toBeInTheDocument();
-    expect(screen.getByText(/complete by eod/i)).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
-  });
 
-  test('logs when the close button is clicked', () => {
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    expect(closeButton).toBeInTheDocument();
 
-    render(<Notifications />);
-    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    const listItems = screen.getAllByRole("listitem");
+    expect(listItems).toHaveLength(3);
+    expect(listItems[0]).toHaveTextContent(/new course available/i);
+    expect(listItems[1]).toHaveTextContent(/new resume available/i);
+    expect(listItems[2]).toHaveTextContent(/urgent requirement/i);
+    expect(listItems[2]).toHaveTextContent(/complete by eod/i);
 
-    expect(logSpy).toHaveBeenCalledWith('Close button has been clicked');
+    fireEvent.click(closeButton);
+    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
 
-    logSpy.mockRestore();
+    consoleSpy.mockRestore();
   });
 });
