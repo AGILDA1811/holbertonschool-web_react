@@ -1,4 +1,13 @@
-.notification-items {
-    border: 1px dotted #000000;
-    padding: 10px;
+.notifications {
+  border: 1px dashed red;
+  padding: 10px;
+  position: relative;
+}
+
+[data-priority="default"] {
+  color: blue;
+}
+
+[data-priority="urgent"] {
+  color: red;
 }
