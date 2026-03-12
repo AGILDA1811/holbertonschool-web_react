@@ -12,7 +12,7 @@ test("renders 'School Dashboard' h1 element", () => {
     const footerText = screen.getByText(/copyright/i);
     expect(footerText).toBeInTheDocument();
 
-    const imgElement = screen.getByRole("img"); 
+    const imgElement = screen.getByRole("img", { name: /holberton logo/i }); 
     expect(imgElement).toBeInTheDocument();
 
 
