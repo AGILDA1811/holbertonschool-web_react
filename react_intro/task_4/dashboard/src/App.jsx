@@ -6,10 +6,12 @@ import { getCurrentYear, getFooterCopy } from './utils';
 function App() {
   return (
     <>
-      <Notifications />
+      <div className='root-notifications'>
+        <Notifications />
+      </div>
       <div className="App-header">
         <img src={holbertonLogo} alt="holberton logo" />
-        <h1>School Dashboard</h1>
+        <h1 style={{ color: "#e1003c" }}>School Dashboard</h1>
       </div>
       <div className="App-body">
         <p>Login to access the full dashboard</p>

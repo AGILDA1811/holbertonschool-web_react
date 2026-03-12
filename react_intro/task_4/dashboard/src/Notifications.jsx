@@ -8,7 +8,7 @@ function Notifications() {
   };
 
   return (
-    <div className="Notifications">
+    <div className="notification-items">
       <button
         type="button"
         aria-label="Close"

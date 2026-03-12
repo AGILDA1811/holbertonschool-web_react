@@ -1,23 +1,23 @@
-.Notifications {
+.notification-items {
   border: 1px dotted red;
   padding: 10px;
   position: relative;
   text-align: left;
 }
 
-.Notifications p {
+.notification-items p {
   margin: 0 0 1rem;
 }
 
-.Notifications ul {
+.notification-items ul {
   margin: 0;
   padding-left: 1.5rem;
 }
 
-[data-priority="default"] {
+.notification-items li[data-priority="default"] {
   color: blue;
 }
 
-[data-priority="urgent"] {
+.notification-items li[data-priority="urgent"] {
   color: red;
 }
