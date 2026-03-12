@@ -1,6 +1,6 @@
 .Notifications {
-  border: 2px dashed #e1003c;
-  padding: 1rem;
+  border: 1px dotted red;
+  padding: 10px;
   position: relative;
   text-align: left;
 }

@@ -1,9 +1,8 @@
 import "./Notifications.css";
+import closeButton from "./assets/close-button.png";
 import { getLatestNotification } from "./utils";
 
 function Notifications() {
-  const closeButtonPath = `${import.meta.env.BASE_URL}close-button.png`;
-
   const handleClick = () => {
     console.log("Close button has been clicked");
   };
@@ -15,18 +14,18 @@ function Notifications() {
         aria-label="Close"
         style={{
           background: "transparent",
-          border: "none",
-          cursor: "pointer",
           position: "absolute",
           right: "10px",
           top: "10px",
+          border: "none",
+          cursor: "pointer",
         }}
         onClick={handleClick}
       >
         <img
-          src={closeButtonPath}
-          alt="Close button"
-          style={{ height: "10px", width: "10px" }}
+          src={closeButton}
+          alt="close"
+          style={{ width: "10px", height: "10px" }}
         />
       </button>
       <p>Here is the list of notifications</p>

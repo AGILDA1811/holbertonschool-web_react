@@ -1,15 +1,14 @@
 import './App.css'
+import holbertonLogo from './assets/holberton-logo.jpg'
 import Notifications from './Notifications';
 import { getCurrentYear, getFooterCopy } from './utils';
 
 function App() {
-  const logoPath = `${import.meta.env.BASE_URL}holberton-logo.jpg`;
-
   return (
     <>
       <Notifications />
       <div className="App-header">
-        <img src={logoPath} alt="Holberton logo" />
+        <img src={holbertonLogo} alt="holberton logo" />
         <h1>School Dashboard</h1>
       </div>
       <div className="App-body">
@@ -18,7 +17,7 @@ function App() {
         <input type="email" id="email" />
         <label htmlFor="password">Password:</label>
         <input type="password" id="password" />
-        <button type="button">OK</button>
+        <button type="submit">OK</button>
       </div>
       <div className="App-footer">
         <p>Copyright {getCurrentYear()} - {getFooterCopy(true)}</p>
