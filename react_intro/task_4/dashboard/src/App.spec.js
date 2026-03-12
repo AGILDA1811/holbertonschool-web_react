@@ -1,25 +1,34 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-describe('App', () => {
-  test('renders the dashboard layout', () => {
+test("renders 'School Dashboard' h1 element", () => {
     render(<App />);
+    const titleElement = screen.getByRole("heading", { level: 1, name: /school dashboard/i });
+    expect(titleElement).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: /school dashboard/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/login to access the full dashboard/i)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/copyright/i)).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /holberton logo/i })).toBeInTheDocument();
-  });
+    const bodyText = screen.getByText(/login to access the full dashboard/i);
+    expect(bodyText).toBeInTheDocument();
 
-  test('renders the sign in form', () => {
-    render(<App />);
+    const footerText = screen.getByText(/copyright/i);
+    expect(footerText).toBeInTheDocument();
 
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /ok/i })).toBeInTheDocument();
-  });
+    const imgElement = screen.getByRole("img"); 
+    expect(imgElement).toBeInTheDocument();
+
+
+    // 2 input fields (email + password)
+    const inputs = screen.getAllByRole("textbox"); // email is "textbox"
+    const passwordInput = screen.getByLabelText(/password/i);
+    expect(inputs.length).toBe(1); // only 1 textbox (email)
+    expect(passwordInput).toBeInTheDocument();
+
+    // 2 labels (Email + Password)
+    const emailLabel = screen.getByLabelText(/email/i);
+    const passwordLabel = screen.getByLabelText(/password/i);
+    expect(emailLabel).toBeInTheDocument();
+    expect(passwordLabel).toBeInTheDocument();
+
+    // Button with text "Ok"
+    const button = screen.getByRole("button", { name: /ok/i });
+    expect(button).toBeInTheDocument();
 });

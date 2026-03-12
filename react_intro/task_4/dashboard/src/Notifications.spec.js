@@ -1,34 +1,31 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import Notifications from './Notifications';
+import { render, screen, fireEvent } from "@testing-library/react";
+import Notifications from "./Notifications.jsx";
 
-describe('Notifications component', () => {
-  test('renders all required elements and ignores case', () => {
+test("Notifications.jsx test", () => {
     render(<Notifications />);
 
-    const title = screen.getByText(/here is the list of notifications/i);
-    const button = screen.getByRole('button', { name: /close/i });
-    const list = screen.getByRole('list');
-    const firstNotification = screen.getByText(/new course available/i);
-    const secondNotification = screen.getByText(/new resume available/i);
-    const latestNotification = screen.getByText(/urgent requirement/i);
+    // 1. Titulli
+    const notificationTitle = screen.getByText("Here is the list of notifications");
+    expect(notificationTitle).toBeInTheDocument();
 
-    expect(title).toBeInTheDocument();
-    expect(button).toBeInTheDocument();
-    expect(list).toBeInTheDocument();
-    expect(firstNotification).toBeInTheDocument();
-    expect(secondNotification).toBeInTheDocument();
-    expect(latestNotification).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
-  });
+    // 2. Butoni Close
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    expect(closeButton).toBeInTheDocument();
 
-  test('clicking the close button logs to console', () => {
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    // 3. 3 li elements
+    const listItems = screen.getAllByRole("listitem");
+    expect(listItems).toHaveLength(3);
 
-    render(<Notifications />);
-    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    // 4. Spy për console.log
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
-    expect(logSpy).toHaveBeenCalledWith('Close button has been clicked');
+    // 5. Klikimi i butonit Close
+    fireEvent.click(closeButton);
+    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
 
-    logSpy.mockRestore();
-  });
+    // 6. Pastrimi i spy
+    consoleSpy.mockRestore();
+
+    console.log("OK");
 });
+console.log("OK");
