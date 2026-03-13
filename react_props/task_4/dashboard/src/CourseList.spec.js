@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import CourseList from "./CourseList/CourseList.jsx";
+import CourseList from "./CourseList/CourseList.js";
 
 const courses = [
   { id: 1, name: "ES6", credit: 60 },
