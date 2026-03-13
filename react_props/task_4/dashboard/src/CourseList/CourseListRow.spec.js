@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import CourseListRow from "./CourseListRow.js";
+import CourseListRow from "./CourseListRow.jsx";
 
 describe("CourseListRow component", () => {
   test("renders one column header with colspan 2 when second cell is null", () => {

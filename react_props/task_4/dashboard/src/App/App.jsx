@@ -4,7 +4,7 @@ import Notifications from "../Notifications/Notifications.js";
 import Header from "../Header/Header.jsx";
 import Login from "../Login/Login.jsx";
 import Footer from "../Footer/Footer.jsx";
-import CourseList from "../CourseList/CourseList.js";
+import CourseList from "../CourseList/CourseList.jsx";
 import { getLatestNotification } from "../utils/utils.js";
 
 function App({ isLoggedIn = false }) {
