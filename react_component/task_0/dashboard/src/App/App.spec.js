@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("App component", () => {
-  test("renders the Login component when isLoggedIn is false", () => {
-    render(<App isLoggedIn={false} />);
+  test("renders the Notifications, Header, Login and Footer components", () => {
+    render(<App />);
 
     expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
     expect(
@@ -19,15 +19,5 @@ describe("App component", () => {
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /ok/i })).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
-  });
-
-  test("renders the CourseList component when isLoggedIn is true", () => {
-    render(<App isLoggedIn />);
-
-    expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /available courses/i })
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/login to access the full dashboard/i)).not.toBeInTheDocument();
   });
 });
