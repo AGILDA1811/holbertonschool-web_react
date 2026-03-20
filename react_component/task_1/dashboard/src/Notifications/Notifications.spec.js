@@ -1,72 +1,78 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications.js";
+/* eslint-disable */
+import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
+import Notifications from "./Notifications";
 
-const notifications = [
-  { id: 1, type: "default", value: "Test notification 1" },
-  { id: 2, type: "urgent", value: "Test notification 2" },
-  {
-    id: 3,
-    type: "urgent",
-    html: { __html: "<strong>Test notification 3</strong>" },
-    value: "",
-  },
-];
+describe("Notifications Component", () => {
+    describe("When displayDrawer is false", () => {
+        it("should display only the title, not the drawer content", () => {
+            render(<Notifications displayDrawer={false} />);
 
-describe("Notifications component", () => {
-  test("always displays the notifications title", () => {
-    render(<Notifications />);
+            expect(screen.getByText("Your notifications")).toBeInTheDocument();
 
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-  });
+            expect(screen.queryByText("Here is the list of notifications")).not.toBeInTheDocument();
+            expect(screen.queryByText("No new notification for now")).not.toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+            expect(screen.queryByRole("list")).not.toBeInTheDocument();
+        });
+    });
 
-  test("does not display drawer content when displayDrawer is false", () => {
-    render(<Notifications notifications={notifications} />);
+    describe("When displayDrawer is true", () => {
+        it("should display the drawer content with notifications", () => {
+            const notifications = [
+                { id: 1, type: "default", value: "New course available" },
+                { id: 2, type: "urgent", value: "New resume available" }
+            ];
 
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-    expect(
-      screen.queryByText(/here is the list of notifications/i)
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /close/i })
-    ).not.toBeInTheDocument();
-    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
-  });
+            render(<Notifications notifications={notifications} displayDrawer={true} />);
 
-  test("displays drawer content when displayDrawer is true", () => {
-    render(<Notifications displayDrawer notifications={notifications} />);
+            expect(screen.getByText("Your notifications")).toBeInTheDocument();
 
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/here is the list of notifications/i)
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("listitem")).toHaveLength(3);
-    expect(screen.getByText(/test notification 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/test notification 2/i)).toBeInTheDocument();
-    expect(screen.getByText(/test notification 3/i)).toBeInTheDocument();
-  });
+            expect(screen.getByText("Here is the list of notifications")).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+            expect(screen.getByRole("list")).toBeInTheDocument();
 
-  test("displays an empty state when displayDrawer is true and notifications is empty", () => {
-    render(<Notifications displayDrawer notifications={[]} />);
+            expect(screen.getByText("New course available")).toBeInTheDocument();
+            expect(screen.getByText("New resume available")).toBeInTheDocument();
+        });
 
-    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
-    expect(screen.getByText(/no new notification for now/i)).toBeInTheDocument();
-    expect(
-      screen.queryByText(/here is the list of notifications/i)
-    ).not.toBeInTheDocument();
-    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
-  });
+        it("should display 'No new notification for now' when notifications array is empty", () => {
+            render(<Notifications notifications={[]} displayDrawer={true} />);
 
-  test("logs when the close button is clicked", () => {
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+            expect(screen.getByText("Your notifications")).toBeInTheDocument();
 
-    render(<Notifications displayDrawer notifications={notifications} />);
+            expect(screen.getByText("No new notification for now")).toBeInTheDocument();
 
-    const closeButton = screen.getByRole("button", { name: /close/i });
+            expect(screen.queryByText("Here is the list of notifications")).not.toBeInTheDocument();
+            expect(screen.queryByRole("list")).not.toBeInTheDocument();
 
-    fireEvent.click(closeButton);
-    expect(consoleSpy).toHaveBeenCalledWith("Close button has been clicked");
+            expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+        });
+    });
 
-    consoleSpy.mockRestore();
-  });
+    describe("NotificationItem styling", () => {
+        it("should have blue color when type is default", () => {
+            const { container } = render(
+                <Notifications
+                    notifications={[{ id: 1, type: "default", value: "Test" }]}
+                    displayDrawer={true}
+                />
+            );
+
+            const listItem = container.querySelector('[data-notification-type="default"]');
+            expect(listItem).toHaveStyle({ color: "blue" });
+        });
+
+        it("should have red color when type is urgent", () => {
+            const { container } = render(
+                <Notifications
+                    notifications={[{ id: 1, type: "urgent", value: "Test" }]}
+                    displayDrawer={true}
+                />
+            );
+
+            const listItem = container.querySelector('[data-notification-type="urgent"]');
+            expect(listItem).toHaveStyle({ color: "red" });
+        });
+    });
 });

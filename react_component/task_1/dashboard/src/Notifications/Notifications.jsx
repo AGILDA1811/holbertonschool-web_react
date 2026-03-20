@@ -1,52 +1,48 @@
-import "./Notifications.css";
+/* eslint-disable */
+
 import closeIcon from "../assets/close-button.png";
-import NotificationItem from "./NotificationItem.js";
+import NotificationItem from "./NotificationItem";
+import "./Notifications.css";
 
-function Notifications({ displayDrawer = false, notifications = [] }) {
-  const handleClick = () => {
-    console.log("Close button has been clicked");
-  };
+const Notifications = ({ notifications = [], displayDrawer = false }) => {
+    return (
+        <div className="notifications-container">
+            {/* Always visible title */}
+            <div className="notification-title">Your notifications</div>
 
-  return (
-    <div className="notifications">
-      <div className="notification-title">Your notifications</div>
+            {/* Only render drawer if displayDrawer is true */}
+            {displayDrawer && (
+                <div className="notification-items">
+                    {notifications.length > 0 ? (
+                        <>
+                            <p>Here is the list of notifications</p>
+                            <ul>
+                                {notifications.map((notification) => (
+                                    <NotificationItem
+                                        key={notification.id}
+                                        type={notification.type}
+                                        html={notification.html}
+                                        value={notification.value}
+                                    />
+                                ))}
+                            </ul>
+                        </>
+                    ) : (
+                        <p>No new notification for now</p>
+                    )}
 
-      {displayDrawer ? (
-        <div className="notification-items">
-          <button
-            type="button"
-            style={{ position: "absolute", top: "15px", right: "20px" }}
-            aria-label="Close"
-            onClick={handleClick}
-          >
-            <img
-              src={closeIcon}
-              alt="close"
-              style={{ width: "10px", height: "10px" }}
-            />
-          </button>
-
-          {notifications.length === 0 ? (
-            <p>No new notification for now</p>
-          ) : (
-            <>
-              <p>Here is the list of notifications</p>
-              <ul>
-                {notifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    type={notification.type}
-                    value={notification.value}
-                    html={notification.html}
-                  />
-                ))}
-              </ul>
-            </>
-          )}
+                    {/* Close button always visible when displayDrawer is true */}
+                    <button
+                        aria-label="Close"
+                        onClick={() => console.log("Close button has been clicked")}
+                        className="close-button"
+                    >
+                        <img alt="Close Button" src={closeIcon} />
+                    </button>
+                </div>
+            )}
         </div>
-      ) : null}
-    </div>
-  );
-}
+    );
+};
 
 export default Notifications;
