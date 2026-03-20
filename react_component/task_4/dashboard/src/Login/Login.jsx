@@ -2,7 +2,7 @@ import React from 'react';
 import './Login.css';
 import WithLogging from '../HOC/WithLogging';
 
-const Login = () => {
+export const Login = () => {
   return (
     <div className="App-body">
       <p>Login to access the full dashboard</p>
@@ -18,6 +18,6 @@ const Login = () => {
   );
 };
 
-
 const LoginWithLogging = WithLogging(Login);
-export default Login;
+
+export default LoginWithLogging;

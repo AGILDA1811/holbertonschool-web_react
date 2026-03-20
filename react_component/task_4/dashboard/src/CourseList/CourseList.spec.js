@@ -1,7 +1,6 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import CourseList from './CourseList';
-import CourseListRow from './CourseListRow';
+import { render, screen } from '@testing-library/react';
+import { CourseList } from './CourseList';
 
 describe('CourseList component', () => {
   const coursesList = [
@@ -11,12 +10,13 @@ describe('CourseList component', () => {
   ];
 
   it('renders 5 rows when courses array is provided', () => {
-    const wrapper = shallow(<CourseList courses={coursesList} />);
-    expect(wrapper.find(CourseListRow)).toHaveLength(5);
+    const { container } = render(<CourseList courses={coursesList} />);
+    expect(container.querySelectorAll('tr')).toHaveLength(5);
   });
 
-  it('renders 1 row when courses array is empty', () => {
-    const wrapper = shallow(<CourseList courses={[]} />);
-    expect(wrapper.find(CourseListRow)).toHaveLength(3);
+  it('renders 3 rows when courses array is empty', () => {
+    const { container } = render(<CourseList courses={[]} />);
+    expect(container.querySelectorAll('tr')).toHaveLength(3);
+    expect(screen.getByText('No course available yet')).toBeInTheDocument();
   });
 });
