@@ -1,0 +1,9 @@
+.Notifications {
+  border: 2px dotted #e1003c;
+  padding: 5px;
+  overflow: hidden;
+}
+
+.Notifications button {
+  float: right;
+}
