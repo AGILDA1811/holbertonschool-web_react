@@ -1,17 +1,9 @@
-/* eslint-disable */
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import closeIcon from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem";
 import "./Notifications.css";
 
-class Notifications extends Component {
-    shouldComponentUpdate(nextProps) {
-        return (
-            nextProps.displayDrawer !== this.props.displayDrawer ||
-            nextProps.notifications.length !== this.props.notifications.length
-        );
-    }
-
+class Notifications extends PureComponent {
     render() {
         const {
             notifications = [],
