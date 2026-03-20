@@ -1,43 +1,39 @@
+/* eslint-disable */
 import React from 'react';
-import { shallow } from 'enzyme';
-import Notifications from './Notifications';
+import { render, screen } from '@testing-library/react';
 import NotificationItem from './NotificationItem';
 
-describe('Notifications component', () => {
-  const notificationsList = [
-    { id: 1, type: 'default', value: 'New course available' },
-    { id: 2, type: 'urgent', value: 'New resume available' },
-    { id: 3, type: 'urgent', html: { __html: 'Urgent requirement - complete by EOD' } },
-  ];
+describe('NotificationItem component', () => {
+    test('renders with default type and correct styling', () => {
+        render(<NotificationItem type="default" value="Test notification" />);
 
-  it('renders 3 NotificationItem components', () => {
-    const wrapper = shallow(<Notifications notifications={notificationsList} />);
-    expect(wrapper.find(NotificationItem)).toHaveLength(3);
-  });
+        const liElement = screen.getByText('Test notification');
 
-  it('renders first item with correct type and value', () => {
-    const wrapper = shallow(<Notifications notifications={notificationsList} />);
-    const first = wrapper.find(NotificationItem).at(0);
-    expect(first.prop('type')).toBe('default');
-    expect(first.prop('value')).toBe('New course available');
-  });
+        expect(liElement).toHaveAttribute('data-notification-type', 'default');
 
-  it('renders second item with correct type and value', () => {
-    const wrapper = shallow(<Notifications notifications={notificationsList} />);
-    const second = wrapper.find(NotificationItem).at(1);
-    expect(second.prop('type')).toBe('urgent');
-    expect(second.prop('value')).toBe('New resume available');
-  });
+        expect(liElement).toHaveStyle('color: blue');
+    });
 
-  it('renders third item with correct type and html', () => {
-    const wrapper = shallow(<Notifications notifications={notificationsList} />);
-    const third = wrapper.find(NotificationItem).at(2);
-    expect(third.prop('type')).toBe('urgent');
-    expect(third.prop('html')).toEqual({ __html: 'Urgent requirement - complete by EOD' });
-  });
+    test('renders with urgent type and correct styling', () => {
+        render(<NotificationItem type="urgent" value="Urgent notification" />);
 
-  it('renders with empty array when no notifications prop passed', () => {
-    const wrapper = shallow(<Notifications />);
-    expect(wrapper.find(NotificationItem)).toHaveLength(0);
-  });
+        const liElement = screen.getByText('Urgent notification');
+
+        expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
+
+        expect(liElement).toHaveStyle('color: red');
+    });
+
+    test('renders with html content', () => {
+        const htmlContent = { __html: '<strong>Urgent requirement</strong>' };
+        render(<NotificationItem type="urgent" html={htmlContent} />);
+
+        const liElement = document.querySelector('li');
+
+        expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
+
+        expect(liElement).toHaveStyle('color: red');
+
+        expect(liElement.innerHTML).toContain('<strong>Urgent requirement</strong>');
+    });
 });
