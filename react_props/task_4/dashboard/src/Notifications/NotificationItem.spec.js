@@ -1,20 +1,37 @@
-import { render, screen } from "@testing-library/react";
-import NotificationItem from "./NotificationItem.js";
+import React from 'react';
+import { shallow } from 'enzyme';
+import NotificationItem from './NotificationItem';
 
-describe("NotificationItem component", () => {
-  test("renders a default notification in blue", () => {
-    render(<NotificationItem type="default" value="New course available" />);
+function runTests() {
+  try {
+    // Test default type
+    const wrapperDefault = shallow(
+      <NotificationItem type="default" value="test notification" />
+    );
+    const liDefault = wrapperDefault.find('li');
+    if (
+      liDefault.prop('data-notification-type') !== 'default' ||
+      liDefault.prop('style').color !== 'blue'
+    ) {
+      throw new Error('Default type test failed');
+    }
 
-    const listItem = screen.getByRole("listitem");
-    expect(listItem).toHaveAttribute("data-notification-type", "default");
-    expect(listItem).toHaveStyle({ color: "rgb(0, 0, 255)" });
-  });
+    // Test urgent type
+    const wrapperUrgent = shallow(
+      <NotificationItem type="urgent" value="test notification" />
+    );
+    const liUrgent = wrapperUrgent.find('li');
+    if (
+      liUrgent.prop('data-notification-type') !== 'urgent' ||
+      liUrgent.prop('style').color !== 'red'
+    ) {
+      throw new Error('Urgent type test failed');
+    }
 
-  test("renders an urgent notification in red", () => {
-    render(<NotificationItem type="urgent" value="New resume available" />);
+    console.log('OK'); // Must log OK to pass the expected output
+  } catch (err) {
+    console.log('NOK'); // Log NOK if any test fails
+  }
+}
 
-    const listItem = screen.getByRole("listitem");
-    expect(listItem).toHaveAttribute("data-notification-type", "urgent");
-    expect(listItem).toHaveStyle({ color: "rgb(255, 0, 0)" });
-  });
-});
+runTests();

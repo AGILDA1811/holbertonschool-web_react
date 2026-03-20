@@ -1,20 +1,20 @@
-import { render, screen } from "@testing-library/react";
-import Header from "./Header.jsx";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Header from './Header';
 
-describe("Header component", () => {
-  test("renders the Holberton logo", () => {
-    render(<Header />);
+test('Header renders without crashing', () => {
+  render(<Header />);
+});
 
-    expect(
-      screen.getByRole("img", { name: /holberton logo/i })
-    ).toBeInTheDocument();
-  });
+test('Header contains the Holberton logo', () => {
+  render(<Header />);
+  const logo = screen.getByAltText(/holberton logo/i);
+  expect(logo).toBeInTheDocument();
+});
 
-  test("renders the h1 heading with the correct text", () => {
-    render(<Header />);
-
-    expect(
-      screen.getByRole("heading", { level: 1, name: /school dashboard/i })
-    ).toBeInTheDocument();
-  });
+test('Header contains h1 with correct text', () => {
+  render(<Header />);
+  const heading = screen.getByRole('heading', { name: /School dashboard/i });
+  expect(heading).toBeInTheDocument();
+  expect(heading.tagName).toBe('H1'); // safe uppercase check
 });

@@ -1,24 +1,20 @@
-import "./Login.css";
+import React from 'react';
+import './Login.css';
 
-function Login() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
-
+const Login = () => {
   return (
     <div className="App-body">
-      <p> Login to access the full dashboard</p>
-      <form className="App-body-form" onSubmit={handleSubmit}>
-        <label htmlFor="email">email</label>
-        <input type="email" id="email" />
+      <p>Login to access the full dashboard</p>
 
-        <label htmlFor="password">password</label>
-        <input type="password" id="password" />
+      <label htmlFor="email">Email:</label>
+      <input type="email" id="email" autoComplete="username" />
 
-        <button type="submit">Ok</button>
-      </form>
+      <label htmlFor="password">Password:</label>
+      <input type="password" id="password" autoComplete="current-password" />
+
+      <button type="submit">OK</button>
     </div>
   );
-}
+};
 
 export default Login;

@@ -1,3 +1,4 @@
-.App-footer > p {
-  text-align: center;
+.App-footer {
+    border-top: 2px solid #e1003c;
+    text-align: center;
 }

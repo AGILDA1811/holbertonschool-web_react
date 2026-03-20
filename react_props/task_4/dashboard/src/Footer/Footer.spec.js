@@ -1,14 +1,14 @@
-import { render, screen } from "@testing-library/react";
-import Footer from "./Footer.jsx";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Footer from './Footer';
 
-describe("Footer component", () => {
-  test("renders the correct copyright string", () => {
-    render(<Footer />);
+test('Footer renders without crashing', () => {
+  render(<Footer />);
+});
 
-    expect(
-      screen.getByText(
-        `Copyright ${new Date().getFullYear()} - Holberton School`
-      )
-    ).toBeInTheDocument();
-  });
+test('Footer renders correct copyright text when isIndex is true', () => {
+  render(<Footer />);
+  const currentYear = new Date().getFullYear();
+  const paragraph = screen.getByText(`Copyright ${currentYear} - Holberton School`);
+  expect(paragraph).toBeInTheDocument();
 });
