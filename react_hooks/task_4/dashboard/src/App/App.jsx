@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
 import Footer from "../Footer/Footer";
@@ -29,6 +29,7 @@ const coursesList = [
 
 function App() {
   const { user: contextUser } = useContext(AppContext);
+  const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
   const [notifications, setNotifications] = useState(notificationsList);
@@ -40,7 +41,18 @@ function App() {
       .get("/notifications.json")
       .then(({ data }) => {
         if (isMounted) {
-          setNotifications(data);
+          const nextNotifications = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.notifications)
+              ? data.notifications
+              : [];
+
+          setNotifications(
+            nextNotifications.filter(
+              (notification) =>
+                !removedNotificationIdsRef.current.has(notification.id)
+            )
+          );
         }
       })
       .catch(() => {});
@@ -68,6 +80,7 @@ function App() {
 
   const markNotificationAsRead = useCallback((id) => {
     console.log(`Notification ${id} has been marked as read`);
+    removedNotificationIdsRef.current.add(id);
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );

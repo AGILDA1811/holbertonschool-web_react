@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import AppContext from "../Context/context";
@@ -325,5 +325,27 @@ describe("App Component", () => {
         );
 
         consoleSpy.mockRestore();
+    });
+
+    it("does not restore a removed notification when the fetch resolves later", async () => {
+        const user = userEvent.setup();
+        let resolveNotifications;
+        const delayedNotifications = new Promise((resolve) => {
+            resolveNotifications = resolve;
+        });
+
+        axios.get.mockReturnValueOnce(delayedNotifications);
+        renderApp();
+
+        await user.click(
+            screen.getByRole("button", { name: /mark notification 1/i })
+        );
+        expect(screen.queryByText("New course available")).not.toBeInTheDocument();
+
+        resolveNotifications({ data: notificationsData });
+
+        await waitFor(() => {
+            expect(screen.queryByText("New course available")).not.toBeInTheDocument();
+        });
     });
 });
