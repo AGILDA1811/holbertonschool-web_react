@@ -1,7 +1,10 @@
 import { useContext } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
 import AppContext from "../Context/context";
+
+jest.mock("axios");
 
 jest.mock("../Header/Header", () => {
     const React = jest.requireActual("react");
@@ -63,6 +66,8 @@ jest.mock("../Footer/Footer", () => {
 });
 
 jest.mock("../Notifications/Notifications", () => {
+    const React = jest.requireActual("react");
+
     function MockNotifications({
         notifications,
         displayDrawer,
@@ -70,9 +75,48 @@ jest.mock("../Notifications/Notifications", () => {
         handleHideDrawer,
         markNotificationAsRead,
     }) {
+        const previousCallbacksRef = React.useRef({
+            handleDisplayDrawer,
+            handleHideDrawer,
+            markNotificationAsRead,
+        });
+        const [callbackStability, setCallbackStability] = React.useState({
+            sameHandleDisplayDrawer: true,
+            sameHandleHideDrawer: true,
+            sameMarkNotificationAsRead: true,
+        });
+
+        React.useEffect(() => {
+            setCallbackStability({
+                sameHandleDisplayDrawer:
+                    previousCallbacksRef.current.handleDisplayDrawer ===
+                    handleDisplayDrawer,
+                sameHandleHideDrawer:
+                    previousCallbacksRef.current.handleHideDrawer === handleHideDrawer,
+                sameMarkNotificationAsRead:
+                    previousCallbacksRef.current.markNotificationAsRead ===
+                    markNotificationAsRead,
+            });
+
+            previousCallbacksRef.current = {
+                handleDisplayDrawer,
+                handleHideDrawer,
+                markNotificationAsRead,
+            };
+        }, [handleDisplayDrawer, handleHideDrawer, markNotificationAsRead]);
+
         return (
             <section>
                 <p data-testid="display-drawer">{String(displayDrawer)}</p>
+                <p data-testid="same-handle-display-drawer">
+                    {String(callbackStability.sameHandleDisplayDrawer)}
+                </p>
+                <p data-testid="same-handle-hide-drawer">
+                    {String(callbackStability.sameHandleHideDrawer)}
+                </p>
+                <p data-testid="same-mark-notification-as-read">
+                    {String(callbackStability.sameMarkNotificationAsRead)}
+                </p>
                 <button onClick={handleDisplayDrawer} type="button">
                     open notifications
                 </button>
@@ -134,6 +178,21 @@ import App from "./App";
 
 describe("App Component", () => {
     const renderApp = () => render(<App />);
+    const notificationsData = [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        {
+            id: 3,
+            type: "urgent",
+            html: {
+                __html: "<strong>Urgent requirement</strong> - complete by EOD",
+            },
+        },
+    ];
+
+    beforeEach(() => {
+        axios.get.mockResolvedValue({ data: notificationsData });
+    });
 
     function ContextProbe() {
         const { user } = useContext(AppContext);
@@ -155,6 +214,12 @@ describe("App Component", () => {
         ).toBeInTheDocument();
         expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
         expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
+    });
+
+    it("fetches notifications from /notifications.json on mount", () => {
+        renderApp();
+
+        expect(axios.get).toHaveBeenCalledWith("/notifications.json");
     });
 
     it("initializes the app with the context user object", () => {
@@ -189,6 +254,27 @@ describe("App Component", () => {
             screen.getByRole("button", { name: /open notifications/i })
         );
         expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
+    });
+
+    it("keeps notification handlers stable across re-renders", async () => {
+        const user = userEvent.setup();
+        renderApp();
+
+        expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+
+        await user.click(screen.getByRole("button", { name: /trigger login/i }));
+        expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
+
+        await user.click(
+            screen.getByRole("button", { name: /mark notification 1/i })
+        );
+        expect(screen.getByTestId("same-handle-display-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-handle-hide-drawer")).toHaveTextContent("true");
+        expect(screen.getByTestId("same-mark-notification-as-read")).toHaveTextContent("true");
     });
 
     it("updates user state on logIn", async () => {

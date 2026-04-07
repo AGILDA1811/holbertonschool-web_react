@@ -1,4 +1,5 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import axios from "axios";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
 import Footer from "../Footer/Footer";
@@ -31,6 +32,23 @@ function App() {
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
   const [notifications, setNotifications] = useState(notificationsList);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    axios
+      .get("/notifications.json")
+      .then(({ data }) => {
+        if (isMounted) {
+          setNotifications(data);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleDisplayDrawer = useCallback(() => {
     setDisplayDrawer(true);
