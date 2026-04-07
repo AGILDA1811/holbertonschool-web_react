@@ -1,95 +1,242 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { useContext } from "react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import AppContext from "../Context/context";
+
+jest.mock("../Header/Header", () => {
+    const React = jest.requireActual("react");
+    const AppContext = jest.requireActual("../Context/context").default;
+
+    function MockHeader() {
+        const { user, logOut } = React.useContext(AppContext);
+
+        return (
+            <header>
+                <h1>School dashboard</h1>
+                <p data-testid="header-email">{user.email}</p>
+                <p data-testid="header-password">{user.password}</p>
+                <p data-testid="header-logged-in">{String(user.isLoggedIn)}</p>
+                <button onClick={logOut} type="button">
+                    logout
+                </button>
+            </header>
+        );
+    }
+
+    return MockHeader;
+});
+
+jest.mock("../Login/Login", () => {
+    function MockLogin({ logIn }) {
+        return (
+            <div className="App-body">
+                <p>Login to access the full dashboard</p>
+                <button
+                    onClick={() => logIn("test@test.com", "password123")}
+                    type="button"
+                >
+                    Trigger login
+                </button>
+            </div>
+        );
+    }
+
+    return MockLogin;
+});
+
+jest.mock("../Footer/Footer", () => {
+    const React = jest.requireActual("react");
+    const AppContext = jest.requireActual("../Context/context").default;
+
+    function MockFooter() {
+        const { user } = React.useContext(AppContext);
+
+        return (
+            <footer>
+                <p>Copyright</p>
+                {user.isLoggedIn && <a href="#contact">Contact us</a>}
+            </footer>
+        );
+    }
+
+    return MockFooter;
+});
+
+jest.mock("../Notifications/Notifications", () => {
+    function MockNotifications({
+        notifications,
+        displayDrawer,
+        handleDisplayDrawer,
+        handleHideDrawer,
+        markNotificationAsRead,
+    }) {
+        return (
+            <section>
+                <p data-testid="display-drawer">{String(displayDrawer)}</p>
+                <button onClick={handleDisplayDrawer} type="button">
+                    open notifications
+                </button>
+                <button onClick={handleHideDrawer} type="button">
+                    close notifications
+                </button>
+                <button onClick={() => markNotificationAsRead(1)} type="button">
+                    mark notification 1
+                </button>
+                <ul>
+                    {notifications.map((notification) => (
+                        <li key={notification.id}>
+                            {notification.value || notification.html.__html}
+                        </li>
+                    ))}
+                </ul>
+            </section>
+        );
+    }
+
+    return MockNotifications;
+});
+
+jest.mock("../CourseList/CourseList", () => {
+    function MockCourseList() {
+        return <div>CourseList</div>;
+    }
+
+    return MockCourseList;
+});
+
+jest.mock("../BodySection/BodySection", () => {
+    function MockBodySection({ title, children }) {
+        return (
+            <section>
+                <h2>{title}</h2>
+                {children}
+            </section>
+        );
+    }
+
+    return MockBodySection;
+});
+
+jest.mock("../BodySection/BodySectionWithMarginBottom", () => {
+    function MockBodySectionWithMarginBottom({ title, children }) {
+        return (
+            <section>
+                <h2>{title}</h2>
+                {children}
+            </section>
+        );
+    }
+
+    return MockBodySectionWithMarginBottom;
+});
+
 import App from "./App";
 
 describe("App Component", () => {
-    beforeEach(() => {
-        render(<App />);
-    });
+    const renderApp = () => render(<App />);
 
-    it("Renders Header component", () => {
-        expect(screen.getByRole("heading", { name: /school dashboard/i })).toBeInTheDocument();
-    });
+    function ContextProbe() {
+        const { user } = useContext(AppContext);
 
-    it("Renders Login Component", () => {
+        return (
+            <>
+                <p data-testid="probe-email">{user.email}</p>
+                <p data-testid="probe-password">{user.password}</p>
+                <p data-testid="probe-logged-in">{String(user.isLoggedIn)}</p>
+            </>
+        );
+    }
+
+    it("renders the main sections", () => {
+        renderApp();
+
+        expect(
+            screen.getByRole("heading", { name: /school dashboard/i })
+        ).toBeInTheDocument();
         expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
-    });
-
-    it("Renders Footer Component", () => {
         expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
     });
 
-    it("Login is rendered when user is not logged in", () => {
-        cleanup();
-        const { container } = render(<App />);
-        expect(container.querySelector(".App-body")).toBeInTheDocument();
+    it("initializes the app with the context user object", () => {
+        render(
+            <>
+                <App />
+                <ContextProbe />
+            </>
+        );
+
+        expect(screen.getByTestId("header-email")).toHaveTextContent("");
+        expect(screen.getByTestId("header-password")).toHaveTextContent("");
+        expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
+
+        expect(screen.getByTestId("probe-email")).toHaveTextContent("");
+        expect(screen.getByTestId("probe-password")).toHaveTextContent("");
+        expect(screen.getByTestId("probe-logged-in")).toHaveTextContent("false");
     });
 
-    it("CourseList is rendered after successful login", async () => {
-        cleanup();
-        render(<App />);
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
+    it("handles display drawer show and hide actions", async () => {
+        const user = userEvent.setup();
+        renderApp();
 
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "password123");
-        await userEvent.click(button);
+        expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
 
-        expect(screen.getByText(/Course list/i)).toBeInTheDocument();
+        await user.click(
+            screen.getByRole("button", { name: /close notifications/i })
+        );
+        expect(screen.getByTestId("display-drawer")).toHaveTextContent("false");
+
+        await user.click(
+            screen.getByRole("button", { name: /open notifications/i })
+        );
+        expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
     });
 
-    it("returns to Login after logout", async () => {
-        cleanup();
-        render(<App />);
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
+    it("updates user state on logIn", async () => {
+        const user = userEvent.setup();
+        renderApp();
 
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "password123");
-        await userEvent.click(button);
+        await user.click(screen.getByRole("button", { name: /trigger login/i }));
 
-        const logoutLink = screen.getByText(/logout/i);
-        await userEvent.click(logoutLink);
-
-        expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
-    });
-
-    it("shows Contact us link only after successful login", async () => {
-        cleanup();
-        render(<App />);
-
-        expect(
-            screen.queryByRole("link", { name: /contact us/i })
-        ).not.toBeInTheDocument();
-
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
-
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "password123");
-        await userEvent.click(button);
-
+        expect(screen.getByTestId("header-email")).toHaveTextContent("test@test.com");
+        expect(screen.getByTestId("header-password")).toHaveTextContent("password123");
+        expect(screen.getByTestId("header-logged-in")).toHaveTextContent("true");
+        expect(screen.getByText("CourseList")).toBeInTheDocument();
         expect(
             screen.getByRole("link", { name: /contact us/i })
         ).toBeInTheDocument();
     });
 
-    it("removes notification when clicked and logs to console", async () => {
-        cleanup();
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
-        render(<App />);
+    it("resets user state on logOut", async () => {
+        const user = userEvent.setup();
+        renderApp();
 
-        const notificationTitle = screen.getByText("Your notifications");
-        await userEvent.click(notificationTitle);
+        await user.click(screen.getByRole("button", { name: /trigger login/i }));
+        await user.click(screen.getByRole("button", { name: /^logout$/i }));
 
-        const notification = screen.getByText("New course available");
-        await userEvent.click(notification);
+        expect(screen.getByTestId("header-email")).toHaveTextContent("");
+        expect(screen.getByTestId("header-password")).toHaveTextContent("");
+        expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
+        expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
+        expect(
+            screen.queryByRole("link", { name: /contact us/i })
+        ).not.toBeInTheDocument();
+    });
+
+    it("removes notification when marked as read and logs to console", async () => {
+        const user = userEvent.setup();
+        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        renderApp();
+
+        expect(screen.getByText("New course available")).toBeInTheDocument();
+
+        await user.click(
+            screen.getByRole("button", { name: /mark notification 1/i })
+        );
 
         expect(screen.queryByText("New course available")).not.toBeInTheDocument();
-        expect(consoleSpy).toHaveBeenCalledWith("Notification 1 has been marked as read");
+        expect(consoleSpy).toHaveBeenCalledWith(
+            "Notification 1 has been marked as read"
+        );
 
         consoleSpy.mockRestore();
     });

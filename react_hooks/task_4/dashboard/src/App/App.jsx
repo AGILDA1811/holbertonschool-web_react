@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
 import Footer from "../Footer/Footer";
@@ -26,89 +26,72 @@ const coursesList = [
   { id: 3, name: "React", credit: "40" },
 ];
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+function App() {
+  const { user: contextUser } = useContext(AppContext);
+  const [displayDrawer, setDisplayDrawer] = useState(true);
+  const [user, setUser] = useState(contextUser);
+  const [notifications, setNotifications] = useState(notificationsList);
 
-    this.state = {
-      displayDrawer: false,
-      user: { email: "", password: "", isLoggedIn: false },
-      notifications: notificationsList,
-      courses: coursesList,
-    };
+  const handleDisplayDrawer = useCallback(() => {
+    setDisplayDrawer(true);
+  }, []);
 
-    this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
-    this.handleHideDrawer = this.handleHideDrawer.bind(this);
-    this.logIn = this.logIn.bind(this);
-    this.logOut = this.logOut.bind(this);
-    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
-  }
+  const handleHideDrawer = useCallback(() => {
+    setDisplayDrawer(false);
+  }, []);
 
-  handleDisplayDrawer() {
-    this.setState({ displayDrawer: true });
-  }
+  const logIn = useCallback((email, password) => {
+    setUser({ email, password, isLoggedIn: true });
+  }, []);
 
-  handleHideDrawer() {
-    this.setState({ displayDrawer: false });
-  }
+  const logOut = useCallback(() => {
+    setUser(contextUser);
+  }, [contextUser]);
 
-  logIn(email, password) {
-    this.setState({
-      user: { email, password, isLoggedIn: true },
-    });
-  }
-
-  logOut() {
-    this.setState({ user: { email: "", password: "", isLoggedIn: false } });
-  }
-
-  markNotificationAsRead(id) {
+  const markNotificationAsRead = useCallback((id) => {
     console.log(`Notification ${id} has been marked as read`);
-    this.setState((prevState) => ({
-      notifications: prevState.notifications.filter(
-        (notification) => notification.id !== id
-      ),
-    }));
-  }
-
-  render() {
-    const { user, displayDrawer, notifications, courses } = this.state;
-
-    const contextValue = { user, logOut: this.logOut };
-
-    return (
-      <AppContext.Provider value={contextValue}>
-        <div className="notifications-header">
-          <Header />
-          <div className="root-notifications">
-            <Notifications
-              notifications={notifications}
-              displayDrawer={displayDrawer}
-              handleDisplayDrawer={this.handleDisplayDrawer}
-              handleHideDrawer={this.handleHideDrawer}
-              markNotificationAsRead={this.markNotificationAsRead}
-            />
-          </div>
-        </div>
-
-        {user.isLoggedIn ? (
-          <BodySectionWithMarginBottom title="Course list">
-            <CourseList courses={courses} />
-          </BodySectionWithMarginBottom>
-        ) : (
-          <BodySectionWithMarginBottom title="Log in to continue">
-            <Login logIn={this.logIn} />
-          </BodySectionWithMarginBottom>
-        )}
-
-        <BodySection title="News from the School">
-          <p>Holberton School News goes here</p>
-        </BodySection>
-
-        <Footer />
-      </AppContext.Provider>
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
     );
-  }
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({ user, logOut }),
+    [user, logOut]
+  );
+
+  return (
+    <AppContext.Provider value={contextValue}>
+      <div className="notifications-header">
+        <Header />
+        <div className="root-notifications">
+          <Notifications
+            notifications={notifications}
+            displayDrawer={displayDrawer}
+            handleDisplayDrawer={handleDisplayDrawer}
+            handleHideDrawer={handleHideDrawer}
+            markNotificationAsRead={markNotificationAsRead}
+          />
+        </div>
+      </div>
+
+      {user.isLoggedIn ? (
+        <BodySectionWithMarginBottom title="Course list">
+          <CourseList courses={coursesList} />
+        </BodySectionWithMarginBottom>
+      ) : (
+        <BodySectionWithMarginBottom title="Log in to continue">
+          <Login logIn={logIn} />
+        </BodySectionWithMarginBottom>
+      )}
+
+      <BodySection title="News from the School">
+        <p>Holberton School News goes here</p>
+      </BodySection>
+
+      <Footer />
+    </AppContext.Provider>
+  );
 }
 
 export default App;
