@@ -308,9 +308,8 @@ describe("App Component", () => {
         ).not.toBeInTheDocument();
     });
 
-    it("removes notification when marked as read and logs to console", async () => {
+    it("removes notification when marked as read", async () => {
         const user = userEvent.setup();
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
         renderApp();
 
         expect(screen.getByText("New course available")).toBeInTheDocument();
@@ -320,11 +319,6 @@ describe("App Component", () => {
         );
 
         expect(screen.queryByText("New course available")).not.toBeInTheDocument();
-        expect(consoleSpy).toHaveBeenCalledWith(
-            "Notification 1 has been marked as read"
-        );
-
-        consoleSpy.mockRestore();
     });
 
     it("does not restore a removed notification when the fetch resolves later", async () => {
