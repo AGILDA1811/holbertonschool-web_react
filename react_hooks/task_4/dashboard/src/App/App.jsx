@@ -46,6 +46,7 @@ function logDevelopmentError(error) {
 const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
+  const markNotificationAsReadRef = useRef(null);
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
   const [notifications, setNotifications] = useState([]);
@@ -116,11 +117,19 @@ const App = () => {
     setUser(contextUser);
   }, [contextUser]);
 
-  const markNotificationAsRead = useCallback((id) => {
+  const markNotificationAsRead = (id) => {
     removedNotificationIdsRef.current.add(id);
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );
+  };
+
+  useEffect(() => {
+    markNotificationAsReadRef.current = markNotificationAsRead;
+  });
+
+  const memoizedMarkNotificationAsRead = useCallback((id) => {
+    markNotificationAsReadRef.current(id);
   }, []);
 
   const contextValue = useMemo(
@@ -138,7 +147,7 @@ const App = () => {
             displayDrawer={displayDrawer}
             handleDisplayDrawer={handleDisplayDrawer}
             handleHideDrawer={handleHideDrawer}
-            markNotificationAsRead={markNotificationAsRead}
+            markNotificationAsRead={memoizedMarkNotificationAsRead}
           />
         </div>
       </div>
