@@ -43,7 +43,7 @@ function logDevelopmentError(error) {
   }
 }
 
-function App() {
+const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
@@ -160,6 +160,6 @@ function App() {
       <Footer />
     </AppContext.Provider>
   );
-}
+};
 
 export default App;
