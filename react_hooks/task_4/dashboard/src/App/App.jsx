@@ -43,24 +43,13 @@ function logDevelopmentError(error) {
   }
 }
 
-const App = () => {
+function App() {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
   const [notifications, setNotifications] = useState([]);
   const [courses, setCourses] = useState([]);
-  /*
-  Legacy checker compatibility:
-  const [displayDrawer, setDisplayDrawer] = useState(true);
-  const [user, setUser] = useState(contextUser);
-  const [notifications, setNotifications] = useState(notificationsList);
-  const markNotificationAsRead = useCallback((id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
-    );
-  }, []);
-  */
 
   useEffect(() => {
     let isMounted = true;
@@ -171,6 +160,6 @@ const App = () => {
       <Footer />
     </AppContext.Provider>
   );
-};
+}
 
 export default App;
