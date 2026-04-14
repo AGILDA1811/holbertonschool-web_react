@@ -76,6 +76,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (!state.user.isLoggedIn) {
+      return undefined;
+    }
+
     let isMounted = true;
 
     const fetchCourses = async () => {
@@ -98,7 +102,7 @@ const App = () => {
     return () => {
       isMounted = false;
     };
-  }, [state.user]);
+  }, [state.user.isLoggedIn]);
 
   const handleDisplayDrawer = useCallback(() => {
     dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: true });
