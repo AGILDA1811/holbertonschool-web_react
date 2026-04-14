@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import CourseList from "../CourseList/CourseList";
 import "../CourseList/CourseList.css";
 import Footer from "../Footer/Footer";
@@ -8,8 +8,8 @@ import Login from "../Login/Login";
 import Notifications from "../Notifications/Notifications";
 import BodySection from "../BodySection/BodySection";
 import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
-import AppContext from "../Context/context";
 import { getLatestNotification } from "../utils/utils";
+import { appReducer, APP_ACTIONS, initialState } from "./appReducer";
 import "./App.css";
 
 function normalizeNotifications(data) {
@@ -44,12 +44,8 @@ function logDevelopmentError(error) {
 }
 
 const App = () => {
-  const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
-  const [displayDrawer, setDisplayDrawer] = useState(true);
-  const [user, setUser] = useState(contextUser);
-  const [notifications, setNotifications] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
     let isMounted = true;
@@ -59,12 +55,13 @@ const App = () => {
         const { data } = await axios.get("/notifications.json");
 
         if (isMounted) {
-          setNotifications(
-            normalizeNotifications(data).filter(
+          dispatch({
+            type: APP_ACTIONS.SET_NOTIFICATIONS,
+            payload: normalizeNotifications(data).filter(
               (notification) =>
                 !removedNotificationIdsRef.current.has(notification.id)
-            )
-          );
+            ),
+          });
         }
       } catch (error) {
         logDevelopmentError(error);
@@ -86,7 +83,10 @@ const App = () => {
         const { data } = await axios.get("/courses.json");
 
         if (isMounted) {
-          setCourses(normalizeCourses(data));
+          dispatch({
+            type: APP_ACTIONS.SET_COURSES,
+            payload: normalizeCourses(data),
+          });
         }
       } catch (error) {
         logDevelopmentError(error);
@@ -98,44 +98,43 @@ const App = () => {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [state.user]);
 
   const handleDisplayDrawer = useCallback(() => {
-    setDisplayDrawer(true);
+    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: true });
   }, []);
 
   const handleHideDrawer = useCallback(() => {
-    setDisplayDrawer(false);
+    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: false });
   }, []);
 
   const logIn = useCallback((email, password) => {
-    setUser({ email, password, isLoggedIn: true });
+    dispatch({
+      type: APP_ACTIONS.LOGIN,
+      payload: { email, password },
+    });
   }, []);
 
   const logOut = useCallback(() => {
-    setUser(contextUser);
-  }, [contextUser]);
+    dispatch({ type: APP_ACTIONS.LOGOUT });
+  }, []);
 
   const markNotificationAsRead = useCallback((id) => {
     removedNotificationIdsRef.current.add(id);
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
-    );
+    dispatch({
+      type: APP_ACTIONS.MARK_NOTIFICATION_READ,
+      payload: id,
+    });
   }, []);
 
-  const contextValue = useMemo(
-    () => ({ user, logOut }),
-    [user, logOut]
-  );
-
   return (
-    <AppContext.Provider value={contextValue}>
+    <>
       <div className="notifications-header">
-        <Header />
+        <Header user={state.user} logOut={logOut} />
         <div className="root-notifications">
           <Notifications
-            notifications={notifications}
-            displayDrawer={displayDrawer}
+            notifications={state.notifications}
+            displayDrawer={state.displayDrawer}
             handleDisplayDrawer={handleDisplayDrawer}
             handleHideDrawer={handleHideDrawer}
             markNotificationAsRead={markNotificationAsRead}
@@ -143,9 +142,9 @@ const App = () => {
         </div>
       </div>
 
-      {user.isLoggedIn ? (
+      {state.user.isLoggedIn ? (
         <BodySectionWithMarginBottom title="Course list">
-          <CourseList courses={courses} />
+          <CourseList courses={state.courses} />
         </BodySectionWithMarginBottom>
       ) : (
         <BodySectionWithMarginBottom title="Log in to continue">
@@ -157,8 +156,8 @@ const App = () => {
         <p>Holberton School News goes here</p>
       </BodySection>
 
-      <Footer />
-    </AppContext.Provider>
+      <Footer user={state.user} />
+    </>
   );
 };
 

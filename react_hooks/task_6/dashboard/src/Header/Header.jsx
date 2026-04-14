@@ -1,10 +1,11 @@
-import { useContext } from "react";
 import logo from "../assets/holberton-logo.jpg";
-import AppContext from "../Context/context";
 import "./Header.css";
 
-function Header() {
-    const { user = {}, logOut = () => {} } = useContext(AppContext);
+function Header({ user = {}, logOut = () => {} }) {
+    const handleLogout = (event) => {
+        event.preventDefault();
+        logOut();
+    };
 
     return (
         <>
@@ -16,7 +17,7 @@ function Header() {
             {user.isLoggedIn && (
                 <div id="logoutSection">
                     Welcome {user.email} (
-                    <a href="#logout" onClick={logOut}>
+                    <a href="#logout" onClick={handleLogout}>
                         logout
                     </a>
                     )

@@ -1,15 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Header from "./Header";
-import AppContext from "../Context/context";
 
 describe("Header Component", () => {
     it("Renders correct text", () => {
-        render(
-            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
-                <Header />
-            </AppContext.Provider>
-        );
+        render(<Header user={{ isLoggedIn: false }} />);
 
         const heading = screen.getByRole("heading", {
             level: 1,
@@ -19,22 +14,14 @@ describe("Header Component", () => {
     });
 
     it("Renders an image", () => {
-        render(
-            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
-                <Header />
-            </AppContext.Provider>
-        );
+        render(<Header user={{ isLoggedIn: false }} />);
 
         const image = screen.getByAltText(/holberton logo/i);
         expect(image).toBeInTheDocument();
     });
 
     it("does not render logoutSection when user is not logged in", () => {
-        render(
-            <AppContext.Provider value={{ user: { isLoggedIn: false } }}>
-                <Header />
-            </AppContext.Provider>
-        );
+        render(<Header user={{ isLoggedIn: false }} />);
 
         const logoutSection = screen.queryByText(/Welcome/i);
         expect(logoutSection).not.toBeInTheDocument();
@@ -47,11 +34,7 @@ describe("Header Component", () => {
             isLoggedIn: true,
         };
 
-        render(
-            <AppContext.Provider value={{ user, logOut: jest.fn() }}>
-                <Header />
-            </AppContext.Provider>
-        );
+        render(<Header user={user} logOut={jest.fn()} />);
 
         const logoutSection = screen.getByText(/Welcome test@test.com/i);
         expect(logoutSection).toBeInTheDocument();
@@ -68,11 +51,7 @@ describe("Header Component", () => {
         };
         const mockLogOut = jest.fn();
 
-        render(
-            <AppContext.Provider value={{ user, logOut: mockLogOut }}>
-                <Header />
-            </AppContext.Provider>
-        );
+        render(<Header user={user} logOut={mockLogOut} />);
 
         const logoutLink = screen.getByRole("link", { name: /logout/i });
         await userEvent.click(logoutLink);

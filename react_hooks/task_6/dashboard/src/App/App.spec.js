@@ -1,16 +1,9 @@
-import { useContext } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockAxios from "axios";
-import AppContext from "../Context/context";
 
 jest.mock("../Header/Header", () => {
-    const React = jest.requireActual("react");
-    const AppContext = jest.requireActual("../Context/context").default;
-
-    function MockHeader() {
-        const { user, logOut } = React.useContext(AppContext);
-
+    function MockHeader({ user, logOut }) {
         return (
             <header>
                 <h1>School dashboard</h1>
@@ -46,12 +39,7 @@ jest.mock("../Login/Login", () => {
 });
 
 jest.mock("../Footer/Footer", () => {
-    const React = jest.requireActual("react");
-    const AppContext = jest.requireActual("../Context/context").default;
-
-    function MockFooter() {
-        const { user } = React.useContext(AppContext);
-
+    function MockFooter({ user }) {
         return (
             <footer>
                 <p>Copyright</p>
@@ -241,18 +229,6 @@ describe("App Component", () => {
         mockAxios.reset();
     });
 
-    function ContextProbe() {
-        const { user } = useContext(AppContext);
-
-        return (
-            <>
-                <p data-testid="probe-email">{user.email}</p>
-                <p data-testid="probe-password">{user.password}</p>
-                <p data-testid="probe-logged-in">{String(user.isLoggedIn)}</p>
-            </>
-        );
-    }
-
     it("renders the main sections", async () => {
         await renderApp();
 
@@ -294,25 +270,16 @@ describe("App Component", () => {
         });
     });
 
-    it("initializes the app with the context user object", async () => {
-        render(
-            <>
-                <App />
-                <ContextProbe />
-            </>
-        );
-
-        await waitFor(() => {
-            expect(mockAxios.get).toHaveBeenCalled();
-        });
+    it("initializes the app with the reducer initial state", async () => {
+        await renderApp();
 
         expect(screen.getByTestId("header-email")).toHaveTextContent("");
         expect(screen.getByTestId("header-password")).toHaveTextContent("");
         expect(screen.getByTestId("header-logged-in")).toHaveTextContent("false");
-
-        expect(screen.getByTestId("probe-email")).toHaveTextContent("");
-        expect(screen.getByTestId("probe-password")).toHaveTextContent("");
-        expect(screen.getByTestId("probe-logged-in")).toHaveTextContent("false");
+        expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
+        expect(
+            screen.queryByRole("link", { name: /contact us/i })
+        ).not.toBeInTheDocument();
     });
 
     it("handles display drawer show and hide actions", async () => {
