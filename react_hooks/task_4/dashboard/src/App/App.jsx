@@ -1,4 +1,3 @@
-/* eslint-disable */
 import axios from "axios";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import CourseList from "../CourseList/CourseList";
@@ -48,7 +47,7 @@ const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
-  const [user, setUser] = useState(contextUser);
+  const [user, setUser] = useState({ ...contextUser });
   const [notifications, setNotifications] = useState([]);
   const [courses, setCourses] = useState([]);
 
@@ -118,7 +117,11 @@ const App = () => {
   }, []);
 
   const logOut = useCallback(() => {
-    setUser(contextUser);
+    setUser({
+      email: contextUser.email ?? "",
+      password: contextUser.password ?? "",
+      isLoggedIn: false,
+    });
   }, [contextUser]);
 
   const markNotificationAsRead = useCallback((id) => {
