@@ -43,9 +43,20 @@ function logDevelopmentError(error) {
   }
 }
 
+function initializeAppState(baseState) {
+  return {
+    ...baseState,
+    displayDrawer: false,
+  };
+}
+
 const App = () => {
   const removedNotificationIdsRef = useRef(new Set());
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(
+    appReducer,
+    initialState,
+    initializeAppState
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -121,6 +132,7 @@ const App = () => {
 
   const logOut = useCallback(() => {
     dispatch({ type: APP_ACTIONS.LOGOUT });
+    dispatch({ type: APP_ACTIONS.TOGGLE_DRAWER, payload: false });
   }, []);
 
   const markNotificationAsRead = useCallback((id) => {

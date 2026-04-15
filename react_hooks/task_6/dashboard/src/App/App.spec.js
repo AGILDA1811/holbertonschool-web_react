@@ -282,17 +282,17 @@ describe("App Component", () => {
         const user = userEvent.setup();
         await renderApp();
 
-        expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
-
-        await user.click(
-            screen.getByRole("button", { name: /close notifications/i })
-        );
         expect(screen.getByTestId("display-drawer")).toHaveTextContent("false");
 
         await user.click(
             screen.getByRole("button", { name: /open notifications/i })
         );
         expect(screen.getByTestId("display-drawer")).toHaveTextContent("true");
+
+        await user.click(
+            screen.getByRole("button", { name: /close notifications/i })
+        );
+        expect(screen.getByTestId("display-drawer")).toHaveTextContent("false");
     });
 
     it("keeps notification handlers stable across re-renders", async () => {
