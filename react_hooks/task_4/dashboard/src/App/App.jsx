@@ -53,10 +53,6 @@ const App = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
-      return;
-    }
-
     let isMounted = true;
 
     const fetchNotifications = async () => {
@@ -84,6 +80,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (!user.isLoggedIn) {
+      return;
+    }
+
     let isMounted = true;
 
     const fetchCourses = async () => {
