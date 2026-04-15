@@ -44,7 +44,7 @@ function logDevelopmentError(error) {
   }
 }
 
-function App() {
+const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
@@ -53,6 +53,10 @@ function App() {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
+    if (!user.isLoggedIn) {
+      return;
+    }
+
     let isMounted = true;
 
     const fetchNotifications = async () => {
@@ -161,6 +165,6 @@ function App() {
       <Footer />
     </AppContext.Provider>
   );
-}
+};
 
 export default App;
