@@ -43,20 +43,9 @@ function logDevelopmentError(error) {
   }
 }
 
-function initializeAppState(baseState) {
-  return {
-    ...baseState,
-    displayDrawer: false,
-  };
-}
-
 const App = () => {
   const removedNotificationIdsRef = useRef(new Set());
-  const [state, dispatch] = useReducer(
-    appReducer,
-    initialState,
-    initializeAppState
-  );
+  const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
     let isMounted = true;
