@@ -1,20 +1,20 @@
 import React from "react";
 
-const WithLogging = (WrappedComponent) => {
+function WithLogging(WrappedComponent) {
     const componentName =
         WrappedComponent.displayName ||
         WrappedComponent.name ||
         "Component";
 
-    const WithLoggingHOC = class extends React.Component {
+    class WithLoggingComponent extends React.Component {
         render() {
             return <WrappedComponent {...this.props} />;
         }
-    };
+    }
 
-    WithLoggingHOC.displayName = `WithLogging(${componentName})`;
+    WithLoggingComponent.displayName = `WithLogging(${componentName})`;
 
-    return WithLoggingHOC;
-};
+    return WithLoggingComponent;
+}
 
 export default WithLogging;
