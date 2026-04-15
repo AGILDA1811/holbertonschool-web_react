@@ -1,21 +1,21 @@
 /* eslint-disable */
 import React from "react";
 
-function WithLogging(WrappedComponent) {
-    const wrappedName =
+const WithLogging = (WrappedComponent) => {
+    const componentName =
         WrappedComponent.displayName ||
         WrappedComponent.name ||
         "Component";
 
-    class WithLoggingComponent extends React.Component {
+    const WithLoggingHOC = class extends React.Component {
         render() {
             return <WrappedComponent {...this.props} />;
         }
-    }
+    };
 
-    WithLoggingComponent.displayName = `WithLogging(${wrappedName})`;
+    WithLoggingHOC.displayName = `WithLogging(${componentName})`;
 
-    return WithLoggingComponent;
-}
+    return WithLoggingHOC;
+};
 
 export default WithLogging;
